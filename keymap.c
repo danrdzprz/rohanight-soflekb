@@ -16,9 +16,12 @@
   */ 
 
 #include QMK_KEYBOARD_H
-#include "oled.c"
+// #include "oled.c"
 #include "encoder.c"
-
+#ifdef OLED_ENABLE
+		//#include "snakey.c" //OLED code for Snakey, customized from Luna. If not used, do not use OLED_LOGO in config.h.
+		#include "snakey_minimal.c" //OLED code for Snakey, without WPM/related animations to save space. If not used, do not use OLED_LOGO in config.h.
+#endif
 //Default keymap. This can be changed in Via. Use oled.c and encoder.c to change beavior that Via cannot change.
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
@@ -111,3 +114,46 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                          _______, _______, _______, _______, _______,       _______, _______, _______, _______, _______
 )
 };
+
+bool process_record_user(uint16_t keycode, keyrecord_t *record) {
+    #if defined(KEYBOARD_PET) || defined(OLED_LOGO)
+      if (record->event.pressed) { //OLED timeout code
+        oled_timer = timer_read32();
+      }
+    #endif
+
+    switch (keycode) {
+        /* Smart Backspace Delete */
+        /* LAYER */
+        /* KEYBOARD PET STATUS START */
+
+        #ifdef KEYBOARD_PET // KEYBOARD PET STATUS
+          case KC_LCTL:
+          case KC_RCTL:
+            #ifndef SNEAK_DISABLE
+            if (record->event.pressed) { //Pet sneaks when control held.
+              isSneaking = true;
+            } else {
+              isSneaking = false;
+            }
+            #endif
+            #ifdef HAPTIC_ENABLE	//Set different patterns for keys on certain layers. In this case it is for gaming feedback.
+              if (record->event.pressed && (get_highest_layer(layer_state)==1)) {
+                DRV_pulse(51);		//buzz_20
+              }
+            #endif
+            return true;
+          case KC_SPC:
+            if (record->event.pressed) { //Pet jumps when enter is pressed.
+              isJumping = true;
+              showedJump = false;
+            } else {
+              isJumping = false;
+            }
+            return true;
+        #endif
+
+        /* KEYBOARD PET STATUS END */
+    }
+    return true;
+}
