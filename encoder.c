@@ -61,19 +61,19 @@ bool encoder_update_user(uint8_t index, bool clockwise) {
         if (clockwise) {
 			switch (get_highest_layer(layer_state)) {
 				case 0:
-					tap_code(KC_LEFT);
+					tap_code(KC_HOME);
 					break;
 				case 2:
-					tap_code(KC_DOWN);
+					tap_code(KC_WH_D);
 					break;
 			}
         } else {
             switch (get_highest_layer(layer_state)) {
 				case 0:
-					tap_code(KC_RIGHT);
+					tap_code(KC_END);
 					break;
 				case 2:
-					tap_code(KC_UP);
+					tap_code(KC_WH_U);
 					break;
 			}
         }

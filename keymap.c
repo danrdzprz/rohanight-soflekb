@@ -122,11 +122,42 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
       }
     #endif
 
+   
+
+    // register_code(KC_LCTL);
+    // register_code(KC_BSPC);
+    //  } else if (rshift_held) { //When left shift is held and backspace pressed, one whole word will be deleted (right).
+    // unregister_code(held_shift);
+    // register_code(KC_LCTL);
+    // register_code(KC_DEL);
+
+
     switch (keycode) {
         /* Smart Backspace Delete */
         /* LAYER */
         /* KEYBOARD PET STATUS START */
-
+        #if defined(KEYBOARD_PET)
+          case KC_BSPC:
+            // Detect the activation of only Left ctrl
+            if ((get_mods() & MOD_BIT(KC_LCTL)) == MOD_BIT(KC_LCTL)) {
+                if (record->event.pressed) {
+                  isBarking = true;
+                } else {
+                  isBarking = false;
+                }
+            }
+            return true;
+          case KC_DEL:
+            // Detect the activation of only Left ctrl
+            if ((get_mods() & MOD_BIT(KC_LCTL)) == MOD_BIT(KC_LCTL)) {
+                if (record->event.pressed) {
+                  isBarking = true;
+                } else {
+                  isBarking = false;
+                }
+            }
+            return true;
+        #endif
         #ifdef KEYBOARD_PET // KEYBOARD PET STATUS
           case KC_LCTL:
           case KC_RCTL:
@@ -136,11 +167,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
             } else {
               isSneaking = false;
             }
-            #endif
-            #ifdef HAPTIC_ENABLE	//Set different patterns for keys on certain layers. In this case it is for gaming feedback.
-              if (record->event.pressed && (get_highest_layer(layer_state)==1)) {
-                DRV_pulse(51);		//buzz_20
-              }
             #endif
             return true;
           case KC_SPC:
